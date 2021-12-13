@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JobOfferController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,11 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 require __DIR__ . '/auth.php';
+
+Route::resource('job_offers', JobOfferController::class)
+    ->only(['create', 'store', 'edit', 'update', 'destroy'])
+    ->middleware('auth:companies');
+
+Route::resource('job_offers', JobOfferController::class)
+    ->only(['show', 'index'])
+    ->middleware('auth:companies', 'users');
