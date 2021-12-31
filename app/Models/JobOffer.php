@@ -18,11 +18,11 @@ class JobOffer extends Model
     
     public function company()
     {
-        return $this->belingsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function occupation()
     {
-        return $this->belingsTo(Occupation::class);
+        return $this->belongsTo(Occupation::class);
     }
 }
