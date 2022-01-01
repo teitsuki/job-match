@@ -238,6 +238,7 @@ return [
         'CompanyConst' => \App\Consts\CompanyConst::class,
         'UserConst' => \App\Consts\UserConst::class,
         'JobOfferConst' => App\Consts\JobOfferConst::class,
+        'EntryConst' => App\Consts\EntryConst::class,
 
     ],
 

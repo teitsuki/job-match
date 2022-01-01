@@ -90,6 +90,7 @@ class JobOfferController extends Controller
     public function show(JobOffer $jobOffer)
     {
         $entry = '';
+        $entries = [];
 
         if (Auth::guard(UserConst::GUARD)->check()) {
             JobOfferView::updateOrCreate([
@@ -99,7 +100,13 @@ class JobOfferController extends Controller
             $entry = $jobOffer->entries()
                 ->where('user_id', Auth::user()->id)->first();
         }
-        return view('job_offers.show', compact('jobOffer', 'entry'));
+
+        if (Auth::guard(CompanyConst::GUARD)->check() &&
+            Auth::guard(CompanyConst::GUARD)->user()->id == $jobOffer->company_id) {
+            $entries = $jobOffer->entries()->with('user')->get();
+        }
+
+        return view('job_offers.show', compact('jobOffer', 'entry', 'entries'));
     }
 
     /**
