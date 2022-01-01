@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\JobOfferRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Consts\UserConst;
+use App\Consts\CompanyConst;
+use Illuminate\Support\Facades\DB;
 
 class JobOfferController extends Controller
 {
@@ -61,7 +63,7 @@ class JobOfferController extends Controller
      * @param  \Illuminate\Http\JobofferRequest  $JobofferRequest
      * @return \Illuminate\Http\Response
      */
-    public function store(JobofferRequest $request)
+    public function store(JobOfferRequest $request)
     {
         $jobOffer = new JobOffer($request->all());
         $jobOffer->company_id = $request->user()->id;
@@ -104,7 +106,8 @@ class JobOfferController extends Controller
      */
     public function edit(JobOffer $jobOffer)
     {
-        //
+        $occupations = Occupation::all();
+        return view('job_offers.edit', compact('jobOffer', 'occupations'));
     }
 
     /**
@@ -114,9 +117,30 @@ class JobOfferController extends Controller
      * @param  \App\Models\JobOffer  $jobOffer
      * @return \Illuminate\Http\Response
      */
-    public function update(JobofferRequest $JobofferRequest, JobOffer $jobOffer)
+    public function update(JobOfferRequest $request, JobOffer $jobOffer)
     {
-        //
+        if (Auth::guard(CompanyConst::GUARD)->user()->cannot('update', $jobOffer)) {
+            return redirect()->route('job_offers.show', $jobOffer)
+                ->withErrors('自分の求人情報以外は更新できません');
+        }
+        $jobOffer->fill($request->all());
+
+        // トランザクション開始
+        DB::beginTransaction();
+        try {
+            $jobOffer->save();
+
+            // トランザクション終了(成功)
+            DB::commit();
+        } catch (\Exception $e) {
+            // トランザクション終了(失敗)
+            DB::rollback();
+            return back()->withInput()
+                ->withErrors('求人情報更新処理でエラーが発生しました');
+        }
+
+        return redirect()->route('job_offers.show', $jobOffer)
+            ->with('notice', '求人情報を更新しました');
     }
 
     /**
