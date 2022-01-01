@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobOffer;
+use App\Models\JobOfferView;
 use App\Models\Occupation;
+use Illuminate\Http\Request;
 use App\Http\Requests\JobOfferRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Consts\UserConst;
 
 class JobOfferController extends Controller
 {
@@ -13,9 +17,31 @@ class JobOfferController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // $jobOffers = JobOffer::with(['company', 'occupation'])
+        //     ->openData()->latest()->paginate(5);
+        $params = $request->query();
+        $jobOffers = JobOffer::search($params)
+            ->openData()
+            ->order($params)
+            ->with(['company', 'occupation'])
+            ->paginate(5);
+
+        $occupation = $request->occupation;
+        $jobOffers->appends(compact('occupation'));
+
+        $search_occupation = empty($occupation) ? [] : ['occupation' => $occupation];
+        $sort = empty($request->sort) ? [] : ['sort' => $request->sort];
+
+        $occupations = Occupation::all();
+        return view('job_offers.index')
+            ->with(compact(
+                'jobOffers',
+                'occupations',
+                'search_occupation',
+                'sort',
+            ));
     }
 
     /**
@@ -61,6 +87,12 @@ class JobOfferController extends Controller
      */
     public function show(JobOffer $jobOffer)
     {
+        if (Auth::guard(UserConst::GUARD)->check()) {
+            JobOfferView::updateOrCreate([
+                'job_offer_id' => $jobOffer->id,
+                'user_id' => Auth::user()->id,
+            ]);
+        }
         return view('job_offers.show', compact('jobOffer'));
     }
 

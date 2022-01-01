@@ -1,5 +1,7 @@
 <?php
 
+use App\Consts\JobOfferConst;
+
 return [
 
     /*
@@ -234,6 +236,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'CompanyConst' => \App\Consts\CompanyConst::class,
+        'UserConst' => \App\Consts\UserConst::class,
+        'JobOfferConst' => App\Consts\JobOfferConst::class,
 
     ],
 

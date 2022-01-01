@@ -14,9 +14,14 @@ use App\Http\Controllers\JobOfferController;
 |
 */
 
-Route::get('/', function () {
+Route::get('/', [JobOfferController::class, 'index'])
+    ->name('root')
+    ->middleware('auth:companies,users');
+
+Route::get('/welcome', function () {
     return view('welcome');
-})->name('welcome');
+})->name('welcome')
+    ->middleware('guest:companies,users');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
@@ -30,4 +35,4 @@ Route::resource('job_offers', JobOfferController::class)
 
 Route::resource('job_offers', JobOfferController::class)
     ->only(['show', 'index'])
-    ->middleware('auth:companies', 'users');
+    ->middleware('auth:companies,users');
