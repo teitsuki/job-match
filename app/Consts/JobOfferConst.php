@@ -16,7 +16,7 @@ class JobOfferConst
     const STATUS_CLOSE = 0;
     const STATUS_OPEN = 1;
     const STATUS_LIST = [
-        '非公開' => self::STATUS_CLOSE,
+        '未公開' => self::STATUS_CLOSE,
         '公開' => self::STATUS_OPEN,
     ];
 }
