@@ -13,6 +13,7 @@ use Laravel\Fortify\Http\Controllers\ProfileInformationController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\UserController;
 
 foreach (config('fortify.users') as $user) {
     Route::prefix($user)
